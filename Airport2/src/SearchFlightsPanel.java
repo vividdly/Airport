@@ -246,7 +246,7 @@ public class SearchFlightsPanel extends JPanel implements ThemeManager.ThemeList
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                 JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scroll.setBorder(BorderFactory.createEmptyBorder());
-        scroll.setPreferredSize(new Dimension(310, 0));
+        scroll.setPreferredSize(new Dimension(SkyWingUI.SIDEBAR_WIDTH, 0));
         return scroll;
     }
 
@@ -386,10 +386,10 @@ public class SearchFlightsPanel extends JPanel implements ThemeManager.ThemeList
     private JPanel createFlightCard(Flight flight) {
         JPanel card = new JPanel(new BorderLayout(16, 0));
         card.setBackground(CARD_BG);
-        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 120));
+        card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 130));
         card.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createLineBorder(CARD_BORDER, 1, true),
-                BorderFactory.createEmptyBorder(18, 22, 18, 22)));
+                BorderFactory.createEmptyBorder(20, 24, 20, 24)));
 
         // ── Left: route + times ──
         JPanel left = new JPanel();
@@ -453,7 +453,7 @@ public class SearchFlightsPanel extends JPanel implements ThemeManager.ThemeList
         right.add(Box.createVerticalStrut(8));
 
         RoundedButton bookBtn = new RoundedButton("Select Seat", ACCENT);
-        bookBtn.setPreferredSize(new Dimension(148, 40));
+        bookBtn.setPreferredSize(new Dimension(160, 44));
         bookBtn.setFont(new Font("Arial", Font.BOLD, 14));
         bookBtn.setAlignmentX(Component.RIGHT_ALIGNMENT);
         bookBtn.addActionListener(e -> {
@@ -478,13 +478,13 @@ public class SearchFlightsPanel extends JPanel implements ThemeManager.ThemeList
                 card.setBackground(new Color(245, 250, 255));
                 card.setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createLineBorder(ACCENT, 1, true),
-                        BorderFactory.createEmptyBorder(18, 22, 18, 22)));
+                        BorderFactory.createEmptyBorder(20, 24, 20, 24)));
             }
             @Override public void mouseExited(java.awt.event.MouseEvent e) {
                 card.setBackground(CARD_BG);
                 card.setBorder(BorderFactory.createCompoundBorder(
                         BorderFactory.createLineBorder(CARD_BORDER, 1, true),
-                        BorderFactory.createEmptyBorder(18, 22, 18, 22)));
+                        BorderFactory.createEmptyBorder(20, 24, 20, 24)));
             }
         });
 
@@ -526,28 +526,34 @@ public class SearchFlightsPanel extends JPanel implements ThemeManager.ThemeList
             @Override protected void paintComponent(Graphics g) {
                 super.paintComponent(g);
                 if (getText().isEmpty() && !isFocusOwner()) {
-                    g.setColor(new Color(180, 190, 210));
-                    g.setFont(getFont().deriveFont(Font.ITALIC));
-                    g.drawString(placeholder, 10, getHeight() / 2 + 5);
+                    Graphics2D g2 = (Graphics2D) g.create();
+                    g2.setColor(new Color(180, 190, 210));
+                    g2.setFont(getFont().deriveFont(Font.ITALIC));
+                    FontMetrics fm = g2.getFontMetrics();
+                    g2.drawString(placeholder, 12, (getHeight() + fm.getAscent() - fm.getDescent()) / 2);
+                    g2.dispose();
                 }
             }
         };
-        f.setFont(new Font("Arial", Font.PLAIN, 14));
-        f.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        f.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        f.setBackground(Color.WHITE);
+        f.setForeground(DARK);
+        f.setCaretColor(ACCENT);
+        f.setMaximumSize(new Dimension(Integer.MAX_VALUE, 46));
         f.setAlignmentX(Component.LEFT_ALIGNMENT);
         f.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(CARD_BORDER, 1),
-                BorderFactory.createEmptyBorder(8, 10, 8, 10)));
+                BorderFactory.createLineBorder(CARD_BORDER, 1, true),
+                BorderFactory.createEmptyBorder(10, 12, 10, 12)));
         f.addFocusListener(new java.awt.event.FocusAdapter() {
             @Override public void focusGained(java.awt.event.FocusEvent e) {
                 f.setBorder(BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(ACCENT, 1),
-                        BorderFactory.createEmptyBorder(8, 10, 8, 10)));
+                        BorderFactory.createLineBorder(ACCENT, 2, true),
+                        BorderFactory.createEmptyBorder(9, 11, 9, 11)));
             }
             @Override public void focusLost(java.awt.event.FocusEvent e) {
                 f.setBorder(BorderFactory.createCompoundBorder(
-                        BorderFactory.createLineBorder(CARD_BORDER, 1),
-                        BorderFactory.createEmptyBorder(8, 10, 8, 10)));
+                        BorderFactory.createLineBorder(CARD_BORDER, 1, true),
+                        BorderFactory.createEmptyBorder(10, 12, 10, 12)));
             }
         });
         return f;
@@ -555,9 +561,31 @@ public class SearchFlightsPanel extends JPanel implements ThemeManager.ThemeList
 
     private JComboBox<String> styledCombo(String[] items) {
         JComboBox<String> c = new JComboBox<>(items);
-        c.setFont(new Font("Arial", Font.PLAIN, 14));
-        c.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        c.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        c.setBackground(Color.WHITE);
+        c.setForeground(DARK);
+        c.setMaximumSize(new Dimension(Integer.MAX_VALUE, 46));
         c.setAlignmentX(Component.LEFT_ALIGNMENT);
+        c.setBorder(BorderFactory.createLineBorder(CARD_BORDER, 1, true));
+        c.setMaximumRowCount(8);
+        c.setRenderer(new javax.swing.DefaultListCellRenderer() {
+            @Override
+            public Component getListCellRendererComponent(JList<?> list, Object value,
+                                                          int index, boolean isSelected, boolean cellHasFocus) {
+                JLabel lbl = (JLabel) super.getListCellRendererComponent(
+                        list, value, index, isSelected, cellHasFocus);
+                lbl.setBorder(BorderFactory.createEmptyBorder(10, 14, 10, 14));
+                lbl.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+                if (isSelected) {
+                    lbl.setBackground(new Color(230, 242, 255));
+                    lbl.setForeground(ACCENT);
+                } else {
+                    lbl.setBackground(Color.WHITE);
+                    lbl.setForeground(DARK);
+                }
+                return lbl;
+            }
+        });
         return c;
     }
 

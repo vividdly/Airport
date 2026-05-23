@@ -33,7 +33,7 @@ public class SeatSelectionPanel extends JPanel implements ThemeManager.ThemeList
         // Header
         JPanel header = new JPanel(new BorderLayout());
         header.setBackground(ThemeManager.getInstance().getAccentColor());
-        header.setPreferredSize(new Dimension(0, 90));
+        header.setPreferredSize(new Dimension(0, 100));
         JLabel title = new JLabel("   \u2708\uFE0F Select Your Seat - " + selectedFlight.getFlightNumber(), JLabel.LEFT);
         title.setFont(new Font("Arial", Font.BOLD, 26));
         title.setForeground(Color.WHITE);
@@ -56,7 +56,7 @@ public class SeatSelectionPanel extends JPanel implements ThemeManager.ThemeList
         // FIX 1: GridLayout(6, 7) -- 7 columns = 6 seats + 1 aisle spacer per row.
         //         Was GridLayout(6,6) which overflowed and made all seats invisible.
         JPanel grid = new JPanel(new GridLayout(6, 7, 10, 10));
-        grid.setBorder(BorderFactory.createEmptyBorder(30, 50, 30, 50));
+        grid.setBorder(BorderFactory.createEmptyBorder(40, 60, 40, 60));
         grid.setBackground(ThemeManager.getInstance().getPanelBackground());
 
         Set<String> booked = selectedFlight.getBookedSeats();
@@ -78,8 +78,8 @@ public class SeatSelectionPanel extends JPanel implements ThemeManager.ThemeList
                 String seatNum = row + "" + letter;
 
                 JButton btn = new JButton(seatNum);
-                btn.setFont(new Font("Arial", Font.BOLD, 15));
-                btn.setPreferredSize(new Dimension(65, 65));
+                btn.setFont(new Font("Segoe UI", Font.BOLD, 15));
+                btn.setPreferredSize(new Dimension(72, 72));
 
                 if (booked.contains(seatNum)) {
                     btn.setBackground(new Color(220, 53, 69));
@@ -131,7 +131,7 @@ public class SeatSelectionPanel extends JPanel implements ThemeManager.ThemeList
     private JLabel createLegend(String text, Color color) {
         JLabel lbl = new JLabel(" \u25a0 " + text);
         lbl.setForeground(color);
-        lbl.setFont(new Font("Arial", Font.BOLD, 14));
+        lbl.setFont(new Font("Segoe UI", Font.BOLD, 14));
         return lbl;
     }
 

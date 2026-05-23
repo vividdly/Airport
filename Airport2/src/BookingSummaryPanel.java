@@ -9,71 +9,93 @@ public class BookingSummaryPanel extends JPanel implements ThemeManager.ThemeLis
     public BookingSummaryPanel(FlightBookingSystem mainFrame) {
         this.mainFrame = mainFrame;
         ThemeManager.getInstance().addListener(this);
-        setLayout(new BorderLayout(20, 20));
+        setLayout(new BorderLayout(0, 0));
         buildUI();
     }
 
     private void buildUI() {
+        String savedText = summaryLabel != null ? summaryLabel.getText() : "";
         removeAll();
-        setBackground(ThemeManager.getInstance().getBackground());
+        setBackground(SkyWingUI.PANEL_BG);
 
+        // Header
         JPanel header = new JPanel(new BorderLayout());
-        header.setBackground(ThemeManager.getInstance().getAccentColor());
-        header.setPreferredSize(new Dimension(0, 120));
+        header.setBackground(SkyWingUI.SUCCESS);
+        header.setPreferredSize(new Dimension(0, SkyWingUI.HEADER_HEIGHT + 30));
+        header.setBorder(BorderFactory.createEmptyBorder(0, 24, 0, 24));
 
-        JLabel title = new JLabel("Booking Confirmed!", SwingConstants.CENTER);
-        title.setFont(new Font("Arial", Font.BOLD, 36));
+        JLabel checkIcon = new JLabel("✓", SwingConstants.LEFT);
+        checkIcon.setFont(new Font("Segoe UI", Font.BOLD, 48));
+        checkIcon.setForeground(new Color(200, 255, 220));
+        checkIcon.setPreferredSize(new Dimension(70, 0));
+        header.add(checkIcon, BorderLayout.WEST);
+
+        JPanel titleBox = new JPanel(new GridBagLayout());
+        titleBox.setOpaque(false);
+        JLabel title = new JLabel("Booking Confirmed!");
+        title.setFont(new Font("Georgia", Font.BOLD, 34));
         title.setForeground(Color.WHITE);
-        header.add(title, BorderLayout.CENTER);
+        titleBox.add(title);
+        header.add(titleBox, BorderLayout.CENTER);
 
         add(header, BorderLayout.NORTH);
 
-        summaryLabel = new JLabel("", SwingConstants.CENTER);
-        summaryLabel.setFont(new Font("Arial", Font.PLAIN, 18));
+        // Summary card
+        JPanel cardWrapper = new JPanel(new GridBagLayout());
+        cardWrapper.setBackground(SkyWingUI.PANEL_BG);
 
-        JPanel center = new JPanel(new BorderLayout());
-        center.setOpaque(false);
-        center.add(summaryLabel, BorderLayout.CENTER);
+        JPanel card = new JPanel(new BorderLayout(0, 0));
+        card.setBackground(Color.WHITE);
+        card.setBorder(BorderFactory.createCompoundBorder(
+                BorderFactory.createLineBorder(SkyWingUI.CARD_BORDER, 1, true),
+                BorderFactory.createEmptyBorder(32, 40, 32, 40)));
+        card.setPreferredSize(new Dimension(560, 340));
 
-        add(center, BorderLayout.CENTER);
+        summaryLabel = new JLabel(savedText, SwingConstants.CENTER);
+        summaryLabel.setFont(new Font("Segoe UI", Font.PLAIN, 15));
+        card.add(summaryLabel, BorderLayout.CENTER);
+
+        GridBagConstraints gc = new GridBagConstraints();
+        gc.gridx = 0; gc.gridy = 0;
+        cardWrapper.add(card, gc);
+        add(cardWrapper, BorderLayout.CENTER);
 
         // Buttons
-        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 15));
-        btnPanel.setOpaque(false);
+        JPanel btnPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 20, 20));
+        btnPanel.setBackground(SkyWingUI.PANEL_BG);
+        btnPanel.setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, SkyWingUI.CARD_BORDER));
 
-        RoundedButton homeBtn = new RoundedButton("Back to Home", new Color(0, 153, 76));
-        RoundedButton bookingsBtn = new RoundedButton("My Bookings", new Color(0, 102, 204));
+        RoundedButton homeBtn     = new RoundedButton("Back to Home", SkyWingUI.SUCCESS);
+        RoundedButton bookingsBtn = new RoundedButton("My Bookings",  SkyWingUI.ACCENT);
+        homeBtn.setPreferredSize(new Dimension(190, 48));
+        bookingsBtn.setPreferredSize(new Dimension(190, 48));
+        homeBtn.setFont(new Font("Segoe UI", Font.BOLD, 15));
+        bookingsBtn.setFont(new Font("Segoe UI", Font.BOLD, 15));
 
         homeBtn.addActionListener(e -> mainFrame.showPanel("Home"));
-        bookingsBtn.addActionListener(e -> mainFrame.showPanel("Bookings"));
+        bookingsBtn.addActionListener(e -> {
+            mainFrame.getBookingsPanel().refreshList();
+            mainFrame.showPanel("Bookings");
+        });
 
         btnPanel.add(homeBtn);
         btnPanel.add(bookingsBtn);
-
         add(btnPanel, BorderLayout.SOUTH);
     }
 
     public void showSummary(Booking booking) {
-        String summary = "<html><center>" +
-                "<h2>Booking ID: " + booking.getBookingId() + "</h2>" +
-                "<p><b>Passenger:</b> " + booking.getPassengerName() + "</p>" +
-                "<p><b>Flight:</b> " + booking.getFlight().getRoute() + "</p>" +
-                "<p><b>Date:</b> " + booking.getFlight().getDate() + "</p>" +
-                "<p><b>Time:</b> " + booking.getFlight().getDepartureTime() + "</p>" +
-                "<p><b>Seat:</b> " + booking.getSeatNumber() + "</p>" +
-                "<p><b>Price:</b> PHP " + String.format("%,.0f", booking.getFlight().getPrice()) + "</p>" +
-                "</center></html>";
-
-        summaryLabel.setText(summary);
+        summaryLabel.setText("<html><center>" +
+                "<h2 style='color:#007728;font-family:Georgia;'>Booking ID: " + booking.getBookingId() + "</h2>" +
+                "<table style='font-family:Segoe UI;font-size:13pt;border-spacing:8px;'>" +
+                "<tr><td><b>Passenger</b></td><td>" + booking.getPassengerName() + "</td></tr>" +
+                "<tr><td><b>Route</b></td><td>" + booking.getFlight().getRoute() + "</td></tr>" +
+                "<tr><td><b>Date</b></td><td>" + booking.getFlight().getDate() + "</td></tr>" +
+                "<tr><td><b>Departure</b></td><td>" + booking.getFlight().getDepartureTime() + "</td></tr>" +
+                "<tr><td><b>Seat</b></td><td>" + booking.getSeatNumber() + "</td></tr>" +
+                "<tr><td><b>Price</b></td><td style='color:#007728;'><b>PHP " +
+                String.format("%,.0f", booking.getFlight().getPrice()) + "</b></td></tr>" +
+                "</table></center></html>");
     }
 
-    @Override
-    public void onThemeChanged() {
-        // FIX: Save current summary text before rebuilding, then restore it.
-        // Previously, buildUI() recreated summaryLabel (empty), discarding the
-        // booking details that showSummary() had set.
-        String savedText = summaryLabel != null ? summaryLabel.getText() : "";
-        buildUI();
-        if (summaryLabel != null) summaryLabel.setText(savedText);
-    }
+    @Override public void onThemeChanged() { buildUI(); }
 }
